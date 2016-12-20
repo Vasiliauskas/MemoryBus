@@ -36,15 +36,17 @@ namespace MemoryBus.Tests
             var listener = new ManualResetEventSlim();
             sut.Subscribe<string>(s =>
             {
-                Assert.AreEqual(s, value);
+                Assert.AreEqual(s, value + value);
                 listener.Set();
             }, s => s.Length > value.Length);
 
             // Act
             sut.Publish(value);
+            Assert.IsFalse(listener.Wait(1000));
+            sut.Publish(value + value);
 
             // Assert
-            Assert.IsFalse(listener.Wait(1000));
+            Assert.IsTrue(listener.Wait(1000));
         }
 
         private IBus GetSut()
