@@ -4,6 +4,7 @@ namespace MemoryBus
     internal class DisposableHandle : IDisposable
     {
         private Action _dispose;
+        private bool _isDisposed;
         public DisposableHandle(Action dispose)
         {
             if (dispose == null)
@@ -11,6 +12,14 @@ namespace MemoryBus
 
             _dispose = dispose;
         }
-        public void Dispose() => _dispose();
+
+        public void Dispose()
+        {
+            if (!_isDisposed)
+            {
+                _isDisposed = true;
+                _dispose();
+            }
+        }
     }
 }

@@ -16,9 +16,9 @@
         UResponse Request<TRequest, UResponse>(TRequest request);
         Task<UResponse> RequestAsync<TRequest, UResponse>(TRequest request);
 
-        void Respond<TRequest, UResponse>(Func<TRequest, UResponse> handler);
-        void Respond<TRequest, UResponse>(Func<TRequest, UResponse> handler, Func<TRequest, bool> filter);
-        Task RespondAsync<TRequest, UResponse>(Func<TRequest, Task<UResponse>> handler);
-        Task RespondAsync<TRequest, UResponse>(Func<TRequest, Task<UResponse>> handler, Func<TRequest, bool> filter);
+        IDisposable Respond<TRequest, UResponse>(Func<TRequest, UResponse> handler);
+        IDisposable Respond<TRequest, UResponse>(Func<TRequest, UResponse> handler, Func<TRequest, bool> filter);
+        IDisposable RespondAsync<TRequest, UResponse>(Func<TRequest, Task<UResponse>> handler);
+        IDisposable RespondAsync<TRequest, UResponse>(Func<TRequest, Task<UResponse>> handler, Func<TRequest, bool> filter);
     }
 }

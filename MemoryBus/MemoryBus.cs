@@ -9,10 +9,10 @@
 
     public sealed class MemoryBus : IBus, IDisposable
     {
-        private ConcurrentDictionary<Type, List<IDisposable>> _subscribers;
-        private ConcurrentDictionary<Type, List<IDisposable>> _asyncSubscribers;
-        private ConcurrentDictionary<Type, List<IDisposable>> _responders;
-        private ConcurrentDictionary<Type, List<IDisposable>> _asyncResponders;
+        private ConcurrentDictionary<string, List<IDisposable>> _subscribers;
+        private ConcurrentDictionary<string, List<IDisposable>> _asyncSubscribers;
+        private ConcurrentDictionary<string, List<IDisposable>> _responders;
+        private ConcurrentDictionary<string, List<IDisposable>> _asyncResponders;
 
         private bool _isDisposed;
         private IBusConfig _config;
@@ -20,21 +20,23 @@
         public MemoryBus(IBusConfig config)
         {
             _config = config;
-            _subscribers = new ConcurrentDictionary<Type, List<IDisposable>>();
-            _asyncSubscribers = new ConcurrentDictionary<Type, List<IDisposable>>();
+            _subscribers = new ConcurrentDictionary<string, List<IDisposable>>();
+            _asyncSubscribers = new ConcurrentDictionary<string, List<IDisposable>>();
+            _responders = new ConcurrentDictionary<string, List<IDisposable>>();
+            _asyncResponders = new ConcurrentDictionary<string, List<IDisposable>>();
         }
 
         public void Publish<TRequest>(TRequest message)
         {
             List<IDisposable> consumers;
-            if (_subscribers.TryGetValue(typeof(TRequest), out consumers))
+            if (_subscribers.TryGetValue(typeof(TRequest).FullName, out consumers))
                 consumers.ForEach(c => (c as Subscriber<TRequest>).Consume(message));
         }
 
         public async Task PublishAsync<TRequest>(TRequest request)
         {
             List<IDisposable> subscribers;
-            var key = typeof(TRequest);
+            var key = typeof(TRequest).FullName;
             if (_asyncSubscribers.TryGetValue(key, out subscribers))
             {
                 await Task
@@ -47,7 +49,7 @@
             }
             else
             {
-                throw new InvalidOperationException($"Failed to publish async {key.FullName}");
+                throw new InvalidOperationException($"Failed to publish async {key}");
             }
         }
 
@@ -55,7 +57,7 @@
 
         public IDisposable Subscribe<TRequest>(Action<TRequest> handler, Func<TRequest, bool> filter)
         {
-            var key = typeof(TRequest);
+            var key = typeof(TRequest).FullName;
             var subscriber = new Subscriber<TRequest>(handler, filter);
 
             return Subscribe(key, subscriber, _subscribers);
@@ -65,7 +67,7 @@
 
         public IDisposable SubscribeAsync<TRequest>(Func<TRequest, Task> handler, Func<TRequest, bool> filter)
         {
-            var key = typeof(TRequest);
+            var key = typeof(TRequest).FullName;
             var subscriber = new AsyncSubscriber<TRequest>(handler);
 
             return Subscribe(key, subscriber, _asyncSubscribers);
@@ -81,24 +83,36 @@
             throw new NotImplementedException();
         }
 
-        public void Respond<TRequest, UResponse>(Func<TRequest, UResponse> handler)
+        public IDisposable Respond<TRequest, UResponse>(Func<TRequest, UResponse> handler)
         {
-            throw new NotImplementedException();
+            var key = typeof(TRequest).FullName + typeof(UResponse).FullName;
+            var responder = new Responder<TRequest, UResponse>(handler);
+
+            return Subscribe(key, responder, _responders);
         }
 
-        public void Respond<TRequest, UResponse>(Func<TRequest, UResponse> handler, Func<TRequest, bool> filter)
+        public IDisposable Respond<TRequest, UResponse>(Func<TRequest, UResponse> handler, Func<TRequest, bool> filter)
         {
-            throw new NotImplementedException();
+            var key = typeof(TRequest).FullName + typeof(UResponse).FullName;
+            var responder = new Responder<TRequest, UResponse>(handler);
+
+            return Subscribe(key, responder, _responders);
         }
 
-        public Task RespondAsync<TRequest, UResponse>(Func<TRequest, Task<UResponse>> handler)
+        public IDisposable RespondAsync<TRequest, UResponse>(Func<TRequest, Task<UResponse>> handler)
         {
-            throw new NotImplementedException();
+            var key = typeof(TRequest).FullName + typeof(UResponse).FullName;
+            var responder = new AsyncResponder<TRequest, UResponse>(handler);
+
+            return Subscribe(key, responder, _asyncResponders);
         }
 
-        public Task RespondAsync<TRequest, UResponse>(Func<TRequest, Task<UResponse>> handler, Func<TRequest, bool> filter)
+        public IDisposable RespondAsync<TRequest, UResponse>(Func<TRequest, Task<UResponse>> handler, Func<TRequest, bool> filter)
         {
-            throw new NotImplementedException();
+            var key = typeof(TRequest).FullName + typeof(UResponse).FullName;
+            var responder = new AsyncResponder<TRequest, UResponse>(handler);
+
+            return Subscribe(key, responder, _asyncResponders);
         }
 
         public void Dispose()
@@ -114,24 +128,24 @@
             _isDisposed = true;
         }
 
-        private IDisposable Subscribe(Type key, IDisposable subscriber, ConcurrentDictionary<Type,List<IDisposable>> collection)
+        private IDisposable Subscribe(string key, IDisposable subscriber, ConcurrentDictionary<string, List<IDisposable>> collection)
         {
             if (!collection.ContainsKey(key))
                 if (!collection.TryAdd(key, new List<IDisposable>()))
-                    throw new InvalidOperationException($"Failed to subscribe {key.FullName}");
+                    throw new InvalidOperationException($"Failed to subscribe {key}");
 
             collection[key].Add(subscriber);
 
             return new DisposableHandle(() => Unsubscribe(key, subscriber, collection));
         }
 
-        private void Unsubscribe(Type key, IDisposable subscriber, ConcurrentDictionary<Type, List<IDisposable>> collection)
+        private void Unsubscribe(string key, IDisposable subscriber, ConcurrentDictionary<string, List<IDisposable>> collection)
         {
             List<IDisposable> outValue;
             if (collection.TryRemove(key, out outValue))
                 subscriber.Dispose();
             else
-                throw new InvalidOperationException($"Failed to unsubscribe {key.FullName}");
+                throw new InvalidOperationException($"Failed to unsubscribe {key}");
         }
     }
 }

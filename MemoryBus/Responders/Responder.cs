@@ -3,8 +3,6 @@
     using System;
 
     internal class Responder<T,U> : IDisposable
-        where T : class
-        where U : class
     {
         private Func<T, U> _responder;
         internal Responder(Func<T,U> responder)

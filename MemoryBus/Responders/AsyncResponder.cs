@@ -1,11 +1,9 @@
-﻿namespace MemoryBus.Responders
+﻿namespace MemoryBus
 {
     using System;
     using System.Threading.Tasks;
 
     internal class AsyncResponder<T, U> : IDisposable 
-        where T : class 
-        where U : class
     {
         private Func<T, Task<U>> _responder;
         internal AsyncResponder(Func<T, Task<U>> responder)
