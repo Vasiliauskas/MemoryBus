@@ -1,9 +1,9 @@
 ﻿$nugetRoot = (split-path -parent $MyInvocation.MyCommand.Definition)
 $root = (split-path -parent $nugetRoot)
-$assemblyFile = $root + '\bin\Build\MemoryBus.dll'
+$assemblyFile = $root + 'MemoryBus\bin\Build\MemoryBus.dll'
 Write-Host "$root"
 Write-Host "$assemblyFile"
-$version = [System.Reflection.Assembly]::LoadFile($assemblyFile).GetName().Version
+$version = [System.Reflection.Assembly]::LoadFile("$assemblyFile").GetName().Version
 $versionStr = "{0}.{1}.{2}" -f ($version.Major, $version.Minor, $version.Build)
 
 Write-Host "Setting .nuspec version tag to $versionStr"
