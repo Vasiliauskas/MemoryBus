@@ -1,6 +1,6 @@
 ﻿$nugetRoot = (split-path -parent $MyInvocation.MyCommand.Definition)
 $root = (split-path -parent $nugetRoot)
-$assemblyFile = $root + 'MemoryBus\bin\Build\MemoryBus.dll'
+$assemblyFile = $root + '\MemoryBus\bin\Build\MemoryBus.dll'
 Write-Host "$root"
 Write-Host "$assemblyFile"
 $version = [System.Reflection.Assembly]::LoadFile("$assemblyFile").GetName().Version
