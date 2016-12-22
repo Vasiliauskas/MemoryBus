@@ -28,9 +28,12 @@
 
         public void Publish<TRequest>(TRequest message)
         {
-            List<IDisposable> consumers;
-            if (_subscribers.TryGetValue(typeof(TRequest).FullName, out consumers))
-                consumers.ForEach(c => (c as Subscriber<TRequest>).Consume(message));
+            List<IDisposable> subscribers;
+            var key = typeof(TRequest).FullName;
+            if (_subscribers.TryGetValue(key, out subscribers))
+                subscribers.ForEach(c => (c as Subscriber<TRequest>).Consume(message));
+            else
+                throw new InvalidOperationException($"Failed to retrieve subscribers {key}");
         }
 
         public async Task PublishAsync<TRequest>(TRequest request)
@@ -49,7 +52,7 @@
             }
             else
             {
-                throw new InvalidOperationException($"Failed to publish async {key}");
+                throw new InvalidOperationException($"Failed to retrieve subscribers async {key}");
             }
         }
 
@@ -75,7 +78,22 @@
 
         public UResponse Request<TRequest, UResponse>(TRequest request)
         {
-            throw new NotImplementedException();
+            List<IDisposable> responders;
+            var key = typeof(TRequest).FullName + typeof(UResponse).FullName;
+
+            if (_responders.TryGetValue(key, out responders))
+            {
+                var filteredResponders = responders.Cast<Responder<TRequest, UResponse>>().Where(r => r.CanRespond(request));
+
+                if (filteredResponders.Count() != 1)
+                    throw new InvalidOperationException($"There should be one and only responder for {key}");
+
+                return filteredResponders.First().Respond(request);
+            }
+            else
+            {
+                throw new InvalidOperationException($"Failed to retrieve responders {key}");
+            }
         }
 
         public Task<UResponse> RequestAsync<TRequest, UResponse>(TRequest request)

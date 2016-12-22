@@ -49,6 +49,52 @@ namespace MemoryBus.Tests
             Assert.IsTrue(listener.Wait(1000));
         }
 
+        [TestMethod]
+        public void BusCanRespond()
+        {
+            // Assert
+            var sut = GetSut();
+            var value = Guid.NewGuid().ToString();
+            var listener = new ManualResetEventSlim();
+            sut.Respond<string, string>(s =>
+            {
+                Assert.AreEqual(s, value);
+                listener.Set();
+                return s;
+            });
+
+            // Act
+            var result = sut.Request<string, string>(value);
+
+            // Assert
+            Assert.IsTrue(listener.Wait(1000));
+            Assert.AreEqual(result, value);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void BusCannotRespondIfMoreThanOneResponder()
+        {
+            // Assert
+            var sut = GetSut();
+            var value = Guid.NewGuid().ToString();
+            var listener = new ManualResetEventSlim();
+            sut.Respond<string, string>(s =>
+            {
+                Assert.AreEqual(s, value);
+                return s;
+            });
+            sut.Respond<string, string>(s =>
+            {
+                Assert.AreEqual(s, value);
+                return s;
+            });
+
+            // Act
+            // Assert
+            var result = sut.Request<string, string>(value);
+        }
+
         private IBus GetSut()
         {
             return new MemoryBus(new DefaultConfig());
