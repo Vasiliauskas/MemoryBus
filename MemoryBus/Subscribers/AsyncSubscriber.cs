@@ -14,7 +14,7 @@
             _handler = handler;
         }
 
-        public async Task Consume(T message)
+        public async Task ConsumeAsync(T message)
         {
             if (CanConsume(message))
                 await _handler(message);

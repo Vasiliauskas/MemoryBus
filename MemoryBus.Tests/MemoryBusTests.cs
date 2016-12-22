@@ -11,64 +11,70 @@ namespace MemoryBus.Tests
         public void BusCanSubscribeAndReceiveMessages()
         {
             // Arrange
-            var sut = GetSut();
-            var value = Guid.NewGuid().ToString();
-            var listener = new ManualResetEventSlim();
-            sut.Subscribe<string>(s =>
+            using (var sut = GetSut())
             {
-                Assert.AreEqual(s, value);
-                listener.Set();
-            });
+                var value = Guid.NewGuid().ToString();
+                var listener = new ManualResetEventSlim();
+                sut.Subscribe<string>(s =>
+                {
+                    Assert.AreEqual(s, value);
+                    listener.Set();
+                });
 
-            // Act
-            sut.Publish(value);
+                // Act
+                sut.Publish(value);
 
-            // Assert
-            Assert.IsTrue(listener.Wait(5000));
+                // Assert
+                Assert.IsTrue(listener.Wait(5000));
+            }
         }
 
         [TestMethod]
         public void BusCanSubscribeAndReceiveMessagesWithFilter()
         {
             // Arrange
-            var sut = GetSut();
-            var value = Guid.NewGuid().ToString();
-            var listener = new ManualResetEventSlim();
-            sut.Subscribe<string>(s =>
+            using (var sut = GetSut())
             {
-                Assert.AreEqual(s, value + value);
-                listener.Set();
-            }, s => s.Length > value.Length);
+                var value = Guid.NewGuid().ToString();
+                var listener = new ManualResetEventSlim();
+                sut.Subscribe<string>(s =>
+                {
+                    Assert.AreEqual(s, value + value);
+                    listener.Set();
+                }, s => s.Length > value.Length);
 
-            // Act
-            sut.Publish(value);
-            Assert.IsFalse(listener.Wait(1000));
-            sut.Publish(value + value);
+                // Act
+                sut.Publish(value);
+                Assert.IsFalse(listener.Wait(1000));
+                sut.Publish(value + value);
 
-            // Assert
-            Assert.IsTrue(listener.Wait(1000));
+                // Assert
+                Assert.IsTrue(listener.Wait(1000));
+            }
         }
 
         [TestMethod]
         public void BusCanRespond()
         {
             // Assert
-            var sut = GetSut();
-            var value = Guid.NewGuid().ToString();
-            var listener = new ManualResetEventSlim();
-            sut.Respond<string, string>(s =>
+            using (var sut = GetSut())
             {
-                Assert.AreEqual(s, value);
-                listener.Set();
-                return s;
-            });
+                var value = Guid.NewGuid().ToString();
+                var listener = new ManualResetEventSlim();
+                sut.Respond<string, string>(s =>
+                {
+                    Assert.AreEqual(s, value);
+                    listener.Set();
+                    return s;
+                });
 
-            // Act
-            var result = sut.Request<string, string>(value);
+                // Act
+                var result = sut.Request<string, string>(value);
 
-            // Assert
-            Assert.IsTrue(listener.Wait(1000));
-            Assert.AreEqual(result, value);
+                // Assert
+                Assert.IsTrue(listener.Wait(1000));
+                Assert.AreEqual(result, value);
+            }
         }
 
         [TestMethod]
@@ -76,23 +82,53 @@ namespace MemoryBus.Tests
         public void BusCannotRespondIfMoreThanOneResponder()
         {
             // Assert
-            var sut = GetSut();
-            var value = Guid.NewGuid().ToString();
-            var listener = new ManualResetEventSlim();
-            sut.Respond<string, string>(s =>
+            using (var sut = GetSut())
             {
-                Assert.AreEqual(s, value);
-                return s;
-            });
-            sut.Respond<string, string>(s =>
-            {
-                Assert.AreEqual(s, value);
-                return s;
-            });
+                var value = Guid.NewGuid().ToString();
+                var listener = new ManualResetEventSlim();
+                sut.Respond<string, string>(s =>
+                {
+                    Assert.AreEqual(s, value);
+                    return s;
+                });
+                sut.Respond<string, string>(s =>
+                {
+                    Assert.AreEqual(s, value);
+                    return s;
+                });
 
-            // Act
+                // Act
+                // Assert
+                var result = sut.Request<string, string>(value);
+            }
+        }
+
+        [TestMethod]
+        public void BusCanRespondIfMoreThanOneResponderButWithFilters()
+        {
             // Assert
-            var result = sut.Request<string, string>(value);
+            using (var sut = GetSut())
+            {
+                var value = Guid.NewGuid().ToString();
+                var listener = new ManualResetEventSlim();
+                sut.Respond<string, string>(s =>
+                {
+                    Assert.AreEqual(s, value);
+                    return s;
+                }, s => s.Length > value.Length);
+                sut.Respond<string, string>(s =>
+                {
+                    Assert.AreEqual(s, value);
+                    listener.Set();
+                    return s;
+                });
+
+                // Act
+                var result = sut.Request<string, string>(value);
+
+                // Assert
+                Assert.IsTrue(listener.Wait(1000));
+            }
         }
 
         private IBus GetSut()

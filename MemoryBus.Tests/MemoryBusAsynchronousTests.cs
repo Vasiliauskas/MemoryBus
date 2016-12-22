@@ -13,45 +13,127 @@ namespace MemoryBus.Tests
         public async Task MemoryBusCanPublishAndSubscribeAsynchronously()
         {
             // Arrange
-            var sut = GetSut();
-            var value = Guid.NewGuid().ToString();
-            var listener = new ManualResetEventSlim();
-            sut.SubscribeAsync<string>(s =>
+            using (var sut = GetSut())
             {
-                Assert.AreEqual(s, value);
-                listener.Set();
+                var value = Guid.NewGuid().ToString();
+                var listener = new ManualResetEventSlim();
+                sut.SubscribeAsync<string>(s =>
+                {
+                    Assert.AreEqual(s, value);
+                    listener.Set();
 
-                return Task.FromResult<object>(null);
-            });
+                    return Task.FromResult<object>(null);
+                });
 
-            // Act
-            await sut.PublishAsync(value);
+                // Act
+                await sut.PublishAsync(value);
 
-            // Assert
-            Assert.IsTrue(listener.Wait(5000));
+                // Assert
+                Assert.IsTrue(listener.Wait(5000));
+            }
         }
 
         [TestMethod]
         public async Task MemoryBusCanPublishAndSubscribeAsynchronouslyWithFilter()
         {
             // Arrange
-            var sut = GetSut();
-            var value = Guid.NewGuid().ToString();
-            var listener = new ManualResetEventSlim();
-
-            sut.SubscribeAsync<string>(s => Task.Run(() =>
+            using (var sut = GetSut())
             {
-                Assert.AreEqual(s, value + value);
-                listener.Set();
-            }), s => s.Length > value.Length);
+                var value = Guid.NewGuid().ToString();
+                var listener = new ManualResetEventSlim();
 
-            // Act
-            await sut.PublishAsync(value);
-            Assert.IsFalse(listener.Wait(1000));
-            await sut.PublishAsync(value + value);
+                sut.SubscribeAsync<string>(s => Task.Run(() =>
+                {
+                    Assert.AreEqual(s, value + value);
+                    listener.Set();
+                }), s => s.Length > value.Length);
 
+                // Act
+                await sut.PublishAsync(value);
+                Assert.IsFalse(listener.Wait(1000));
+                await sut.PublishAsync(value + value);
+
+                // Assert
+                Assert.IsTrue(listener.Wait(1000));
+            }
+        }
+
+        [TestMethod]
+        public async Task BusCanRespondAsync()
+        {
             // Assert
-            Assert.IsTrue(listener.Wait(1000));
+            using (var sut = GetSut())
+            {
+                var value = Guid.NewGuid().ToString();
+                var listener = new ManualResetEventSlim();
+                sut.RespondAsync<string, string>(s =>
+                {
+                    Assert.AreEqual(s, value);
+                    listener.Set();
+                    return Task.FromResult(s);
+                });
+
+                // Act
+                var result = await sut.RequestAsync<string, string>(value);
+
+                // Assert
+                Assert.IsTrue(listener.Wait(1000));
+                Assert.AreEqual(result, value);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public async Task BusCannotRespondAsyncIfMoreThanOneResponder()
+        {
+            // Assert
+            using (var sut = GetSut())
+            {
+                var value = Guid.NewGuid().ToString();
+                var listener = new ManualResetEventSlim();
+                sut.RespondAsync<string, string>(s =>
+                {
+                    Assert.AreEqual(s, value);
+                    return Task.FromResult(s);
+                });
+                sut.RespondAsync<string, string>(s =>
+                {
+                    Assert.AreEqual(s, value);
+                    return Task.FromResult(s);
+                });
+
+                // Act
+                // Assert
+                var result = await sut.RequestAsync<string, string>(value);
+            }
+        }
+
+        [TestMethod]
+        public async Task BusCanRespondAsyncIfMoreThanOneResponderButWithFilters()
+        {
+            // Assert
+            using (var sut = GetSut())
+            {
+                var value = Guid.NewGuid().ToString();
+                var listener = new ManualResetEventSlim();
+                sut.RespondAsync<string, string>(s =>
+                {
+                    Assert.AreEqual(s, value);
+                    return Task.FromResult(s);
+                }, s => s.Length > value.Length);
+                sut.RespondAsync<string, string>(s =>
+                {
+                    Assert.AreEqual(s, value);
+                    listener.Set();
+                    return Task.FromResult(s); ;
+                });
+
+                // Act
+                var result = await sut.RequestAsync<string, string>(value);
+
+                // Assert
+                Assert.IsTrue(listener.Wait(1000));
+            }
         }
 
         private IBus GetSut()
