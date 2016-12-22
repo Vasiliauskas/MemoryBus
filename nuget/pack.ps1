@@ -1,4 +1,4 @@
-﻿$root = (split-path -parent $MyInvocation.MyCommand.Definition) + '\..'
+﻿$root = ..(split-path -parent $MyInvocation.MyCommand.Definition)
 $assemblyFile = $root + '\bin\Build\MemoryBus.dll'
 Write-Host "$root"
 Write-Host "$assemblyFile"
