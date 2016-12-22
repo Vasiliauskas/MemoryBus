@@ -16,7 +16,7 @@ configuration:
 build:
   project: MemoryBus.sln
 
-test: off
+test: on
 
 after_build:
   - ps: .\nuget\pack.ps1
