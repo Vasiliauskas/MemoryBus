@@ -68,7 +68,7 @@
         public IDisposable SubscribeAsync<TRequest>(Func<TRequest, Task> handler, Func<TRequest, bool> filter)
         {
             var key = typeof(TRequest).FullName;
-            var subscriber = new AsyncSubscriber<TRequest>(handler);
+            var subscriber = new AsyncSubscriber<TRequest>(handler, filter);
 
             return Subscribe(key, subscriber, _asyncSubscribers);
         }
@@ -83,34 +83,22 @@
             throw new NotImplementedException();
         }
 
-        public IDisposable Respond<TRequest, UResponse>(Func<TRequest, UResponse> handler)
-        {
-            var key = typeof(TRequest).FullName + typeof(UResponse).FullName;
-            var responder = new Responder<TRequest, UResponse>(handler);
-
-            return Subscribe(key, responder, _responders);
-        }
+        public IDisposable Respond<TRequest, UResponse>(Func<TRequest, UResponse> handler) => Respond(handler, null);
 
         public IDisposable Respond<TRequest, UResponse>(Func<TRequest, UResponse> handler, Func<TRequest, bool> filter)
         {
             var key = typeof(TRequest).FullName + typeof(UResponse).FullName;
-            var responder = new Responder<TRequest, UResponse>(handler);
+            var responder = new Responder<TRequest, UResponse>(handler, filter);
 
             return Subscribe(key, responder, _responders);
         }
 
-        public IDisposable RespondAsync<TRequest, UResponse>(Func<TRequest, Task<UResponse>> handler)
-        {
-            var key = typeof(TRequest).FullName + typeof(UResponse).FullName;
-            var responder = new AsyncResponder<TRequest, UResponse>(handler);
-
-            return Subscribe(key, responder, _asyncResponders);
-        }
+        public IDisposable RespondAsync<TRequest, UResponse>(Func<TRequest, Task<UResponse>> handler) => RespondAsync(handler, null);
 
         public IDisposable RespondAsync<TRequest, UResponse>(Func<TRequest, Task<UResponse>> handler, Func<TRequest, bool> filter)
         {
             var key = typeof(TRequest).FullName + typeof(UResponse).FullName;
-            var responder = new AsyncResponder<TRequest, UResponse>(handler);
+            var responder = new AsyncResponder<TRequest, UResponse>(handler, filter);
 
             return Subscribe(key, responder, _asyncResponders);
         }

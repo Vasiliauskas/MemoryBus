@@ -5,7 +5,7 @@ using System.Threading;
 namespace MemoryBus.Tests
 {
     [TestClass]
-    public class MemoryBusSynchronousTests
+    public class MemoryBusTests
     {
         [TestMethod]
         public void BusCanSubscribeAndReceiveMessages()

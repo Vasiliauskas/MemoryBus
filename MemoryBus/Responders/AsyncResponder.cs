@@ -3,16 +3,19 @@
     using System;
     using System.Threading.Tasks;
 
-    internal class AsyncResponder<T, U> : IDisposable 
+    internal class AsyncResponder<T, U> : ResponderBase<T>, IDisposable
     {
         private Func<T, Task<U>> _responder;
-        internal AsyncResponder(Func<T, Task<U>> responder)
+        internal AsyncResponder(Func<T, Task<U>> responder, Func<T, bool> filter)
+            : base(filter)
         {
             if (responder == null)
                 throw new ArgumentNullException("Responder cannot be null");
 
             _responder = responder;
         }
+
+        public Task<U> RespondAsync(T message) => _responder(message);
 
         public void Dispose() => _responder = null;
     }
