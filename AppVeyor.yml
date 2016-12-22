@@ -20,11 +20,11 @@ test:
   assemblies:
     - '**\*.tests.dll'
 
-after_test:
-  - ps: .\nuget\pack.ps1
-
 artifacts:
   - path: '**\*.nupkg'
+
+on_success:
+  - ps: .\nuget\pack.ps1
 
 deploy:
   provider: NuGet
