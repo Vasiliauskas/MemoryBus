@@ -11,6 +11,6 @@
     <tags>Memory Bus Events Messages EventAggregator Messaging</tags>
   </metadata>
   <files>
-    <file src="..MemoryBus\bin\Build\MemoryBus.dll" target="lib\net461" />
+    <file src="..\MemoryBus\bin\Build\MemoryBus.dll" target="lib\net461" />
   </files>
 </package>
