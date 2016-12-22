@@ -21,7 +21,7 @@ test: on
 artifacts:
   - path: '**\*.nupkg'
 
-after_build:
+after_test:
   - ps: .\nuget\pack.ps1
 
 deploy:
