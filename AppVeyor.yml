@@ -16,14 +16,12 @@ configuration:
 build:
   project: MemoryBus.sln
 
-test:
-  assemblies:
-    - '**\*.tests.dll'
+test: off
 
 artifacts:
   - path: '**\*.nupkg'
 
-on_success:
+after_build:
   - ps: .\nuget\pack.ps1
 
 deploy:
