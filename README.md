@@ -8,6 +8,6 @@ To use MemoryBus library, create an instance of MemoryBus. It also comes with IB
 Usage:
 ```c#
 IBus bus = new MemoryBus(new DefaultConfig());
-bus.Subscribe<string>(s => Console.WriteLine(s));
+bus.Subscribe<string>(Console.WriteLine);
 bus.Publish("Hello World");
 ```

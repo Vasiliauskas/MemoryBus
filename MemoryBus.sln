@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5BD23067-F1FB-43C3-946C-FCBCDF9A2A00}"
 	ProjectSection(SolutionItems) = preProject
 		AppVeyor.yml = AppVeyor.yml
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{FD408F00-34A4-42DD-B58D-6C7579F0B3D8}"
