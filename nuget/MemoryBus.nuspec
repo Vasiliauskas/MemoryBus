@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>MemoryBus</id>
+    <title>MemoryBus</title>
+    <version>$version$</version>
+    <authors>Vidas Vasiliauskas</authors>
+    <description>MemoryBus is a library for in memory pub/sub messaging. Also includes RPC and async versions</description>
+    <language>en-US</language>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <tags>Memory Bus Events Messages EventAggregator Messaging</tags>
+  </metadata>
+  <files>
+    <file src="..\bin\Build\MemoryBus.dll" target="lib\net461" />
+  </files>
+</package>

@@ -2,7 +2,6 @@
 {
     public interface IBusConfig
     {
-        int ReaderLockTimeout { get; }
-        int WriterLockTimeout { get; }
+       // Left empty for future extensibility and backwards compatibility in MemoryBus creation
     }
 }

@@ -7,6 +7,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemoryBus", "MemoryBus\Memo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemoryBus.Tests", "MemoryBus.Tests\MemoryBus.Tests.csproj", "{4E0415A6-685E-45ED-9328-7F47826C452C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5BD23067-F1FB-43C3-946C-FCBCDF9A2A00}"
+	ProjectSection(SolutionItems) = preProject
+		AppVeyor.yml = AppVeyor.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{FD408F00-34A4-42DD-B58D-6C7579F0B3D8}"
+	ProjectSection(SolutionItems) = preProject
+		nuget\MemoryBus.nuspec = nuget\MemoryBus.nuspec
+		nuget\nuget.exe = nuget\nuget.exe
+		nuget\pack.ps1 = nuget\pack.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +36,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FD408F00-34A4-42DD-B58D-6C7579F0B3D8} = {5BD23067-F1FB-43C3-946C-FCBCDF9A2A00}
 	EndGlobalSection
 EndGlobal
