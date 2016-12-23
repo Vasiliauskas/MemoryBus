@@ -3,7 +3,7 @@
     using System;
     using System.Threading.Tasks;
 
-    internal class AsyncSubscriber<T> : SubscriberBase<T>, IDisposable
+    internal class AsyncSubscriber<T> : SubscriberBase<T>
     {
         private Func<T, Task> _handler;
         public AsyncSubscriber(Func<T, Task> handler, Func<T, bool> filter = null)
@@ -20,7 +20,7 @@
                 await _handler(message);
         }
 
-        public void Dispose()
+        protected override void DisposeLocal()
         {
             _handler = null;
             _filter = null;

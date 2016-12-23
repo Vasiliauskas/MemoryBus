@@ -3,7 +3,7 @@
     using System;
     using System.Threading.Tasks;
 
-    internal class AsyncResponder<T, U> : ResponderBase<T>, IDisposable
+    internal class AsyncResponder<T, U> : ResponderBase<T>
     {
         private Func<T, Task<U>> _responder;
         internal AsyncResponder(Func<T, Task<U>> responder, Func<T, bool> filter)
@@ -17,6 +17,7 @@
 
         public Task<U> RespondAsync(T message) => _responder(message);
 
-        public void Dispose() => _responder = null;
+        protected override void DisposeLocal() => _responder = null;
+
     }
 }

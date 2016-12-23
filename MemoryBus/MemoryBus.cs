@@ -5,14 +5,13 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using System.Threading;
-    using System.Collections.Concurrent;
 
     public sealed class MemoryBus : IBus
     {
-        private ConcurrentDictionary<int, List<IDisposable>> _subscribers;
-        private ConcurrentDictionary<int, List<IDisposable>> _asyncSubscribers;
-        private ConcurrentDictionary<int, List<IDisposable>> _responders;
-        private ConcurrentDictionary<int, List<IDisposable>> _asyncResponders;
+        private ConcurrentKeyedCollection _subscribers;
+        private ConcurrentKeyedCollection _asyncSubscribers;
+        private ConcurrentKeyedCollection _responders;
+        private ConcurrentKeyedCollection _asyncResponders;
 
         private bool _isDisposed;
         private IBusConfig _config;
@@ -20,17 +19,17 @@
         public MemoryBus(IBusConfig config)
         {
             _config = config;
-            _subscribers = new ConcurrentDictionary<int, List<IDisposable>>();
-            _asyncSubscribers = new ConcurrentDictionary<int, List<IDisposable>>();
-            _responders = new ConcurrentDictionary<int, List<IDisposable>>();
-            _asyncResponders = new ConcurrentDictionary<int, List<IDisposable>>();
+            _subscribers = new ConcurrentKeyedCollection(50);
+            _asyncSubscribers = new ConcurrentKeyedCollection(50);
+            _responders = new ConcurrentKeyedCollection(50);
+            _asyncResponders = new ConcurrentKeyedCollection(50);
         }
 
         public void Publish<TRequest>(TRequest message)
         {
             List<IDisposable> subscribers;
             var key = typeof(TRequest).GetHashCode();
-            if (_subscribers.TryGetValue(key, out subscribers))
+            if (_subscribers.TryGet(key, out subscribers))
                 subscribers.ForEach(c => (c as Subscriber<TRequest>).Consume(message));
             else
                 throw new InvalidOperationException($"Failed to retrieve subscribers {key}");
@@ -40,7 +39,7 @@
         {
             List<IDisposable> subscribers;
             var key = typeof(TRequest).GetHashCode();
-            if (_asyncSubscribers.TryGetValue(key, out subscribers))
+            if (_asyncSubscribers.TryGet(key, out subscribers))
             {
                 await Task
                 .WhenAll(subscribers.Select(s => (s as AsyncSubscriber<TRequest>).ConsumeAsync(request)))
@@ -115,36 +114,29 @@
             _isDisposed = true;
         }
 
-        private IDisposable Subscribe<T>(T key, IDisposable subscriber, ConcurrentDictionary<T, List<IDisposable>> collection)
+        private IDisposable Subscribe(int key, IDisposable subscriber, ConcurrentKeyedCollection collection)
         {
-            if (!collection.ContainsKey(key))
-                if (!collection.TryAdd(key, new List<IDisposable>()))
-                    throw new InvalidOperationException($"Failed to subscribe {key}");
-
-            collection[key].Add(subscriber);
+            if (!collection.TryAdd(key, subscriber))
+                throw new InvalidOperationException($"Failed to subscribe {key}");
 
             return new DisposableHandle(() => Unsubscribe(key, subscriber, collection));
         }
 
-        private void Unsubscribe<T>(T key, IDisposable subscriber, ConcurrentDictionary<T, List<IDisposable>> collection)
+        private void Unsubscribe(int key, IDisposable subscriber, ConcurrentKeyedCollection collection)
         {
-            List<IDisposable> outValue;
-            if (collection.TryRemove(key, out outValue))
+            if (collection.TryRemove(key, subscriber))
                 subscriber.Dispose();
             else
-                throw new InvalidOperationException($"Failed to unsubscribe {key}");
+                throw new InvalidOperationException($"Failed to remove member '{key}'");
         }
 
-        private KResponder GetResponder<TRequest, UResponse, KResponder>(
-            TRequest request,
-            IDictionary<int, List<IDisposable>> collection
-            )
+        private KResponder GetResponder<TRequest, UResponse, KResponder>(TRequest request, ConcurrentKeyedCollection collection)
             where KResponder : ResponderBase<TRequest>
         {
             List<IDisposable> responders;
             var key = GetCombinedHashCode(typeof(TRequest), typeof(UResponse));
 
-            if (collection.TryGetValue(key, out responders))
+            if (collection.TryGet(key, out responders))
             {
                 var filteredResponders = responders.Cast<ResponderBase<TRequest>>().Where(r => r.CanRespond(request));
 

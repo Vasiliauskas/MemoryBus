@@ -29,7 +29,7 @@ namespace MemoryBus.Tests
                 await sut.PublishAsync(value);
 
                 // Assert
-                Assert.IsTrue(listener.Wait(5000));
+                Assert.IsTrue(listener.Wait(TestConfig.TestTimeout));
             }
         }
 
@@ -50,11 +50,11 @@ namespace MemoryBus.Tests
 
                 // Act
                 await sut.PublishAsync(value);
-                Assert.IsFalse(listener.Wait(1000));
+                Assert.IsFalse(listener.Wait(TestConfig.TestTimeout));
                 await sut.PublishAsync(value + value);
 
                 // Assert
-                Assert.IsTrue(listener.Wait(1000));
+                Assert.IsTrue(listener.Wait(TestConfig.TestTimeout));
             }
         }
 
@@ -77,7 +77,7 @@ namespace MemoryBus.Tests
                 var result = await sut.RequestAsync<string, string>(value);
 
                 // Assert
-                Assert.IsTrue(listener.Wait(1000));
+                Assert.IsTrue(listener.Wait(TestConfig.TestTimeout));
                 Assert.AreEqual(result, value);
             }
         }
@@ -132,13 +132,10 @@ namespace MemoryBus.Tests
                 var result = await sut.RequestAsync<string, string>(value);
 
                 // Assert
-                Assert.IsTrue(listener.Wait(1000));
+                Assert.IsTrue(listener.Wait(TestConfig.TestTimeout));
             }
         }
 
-        private IBus GetSut()
-        {
-            return new MemoryBus(new DefaultConfig());
-        }
+        private IBus GetSut() => new MemoryBus(new DefaultConfig());
     }
 }

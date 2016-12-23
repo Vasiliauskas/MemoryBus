@@ -25,7 +25,7 @@ namespace MemoryBus.Tests
                 sut.Publish(value);
 
                 // Assert
-                Assert.IsTrue(listener.Wait(5000));
+                Assert.IsTrue(listener.Wait(TestConfig.TestTimeout));
             }
         }
 
@@ -45,11 +45,11 @@ namespace MemoryBus.Tests
 
                 // Act
                 sut.Publish(value);
-                Assert.IsFalse(listener.Wait(1000));
+                Assert.IsFalse(listener.Wait(TestConfig.TestTimeout));
                 sut.Publish(value + value);
 
                 // Assert
-                Assert.IsTrue(listener.Wait(1000));
+                Assert.IsTrue(listener.Wait(TestConfig.TestTimeout));
             }
         }
 
@@ -72,7 +72,7 @@ namespace MemoryBus.Tests
                 var result = sut.Request<string, string>(value);
 
                 // Assert
-                Assert.IsTrue(listener.Wait(1000));
+                Assert.IsTrue(listener.Wait(TestConfig.TestTimeout));
                 Assert.AreEqual(result, value);
             }
         }
@@ -85,7 +85,6 @@ namespace MemoryBus.Tests
             using (var sut = GetSut())
             {
                 var value = Guid.NewGuid().ToString();
-                var listener = new ManualResetEventSlim();
                 sut.Respond<string, string>(s =>
                 {
                     Assert.AreEqual(s, value);
@@ -127,13 +126,43 @@ namespace MemoryBus.Tests
                 var result = sut.Request<string, string>(value);
 
                 // Assert
-                Assert.IsTrue(listener.Wait(1000));
+                Assert.IsTrue(listener.Wait(TestConfig.TestTimeout));
             }
         }
 
-        private IBus GetSut()
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void BusThrowsIfNoResponder()
         {
-            return new MemoryBus(new DefaultConfig());
+            // Arrange
+            using (var sut = GetSut())
+            {
+                // Act
+                // Arrange
+                sut.Request<string, string>(string.Empty);
+            }
         }
+
+        [TestMethod]
+        public void BusRemovesSubscriptionOnHandleDisposed()
+        {
+            // Arrange
+            using (var sut = GetSut())
+            {
+                var listener = new ManualResetEventSlim();
+                var handle = sut.Subscribe<string>(s =>
+                {
+                    listener.Set();
+                });
+                // Act
+                handle.Dispose();
+                sut.Publish(string.Empty);
+
+                // Assert
+                Assert.IsFalse(listener.Wait(TestConfig.TestTimeout));
+            }
+        }
+
+        private IBus GetSut() => new MemoryBus(new DefaultConfig());
     }
 }

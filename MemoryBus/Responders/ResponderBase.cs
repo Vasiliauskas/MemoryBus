@@ -2,7 +2,7 @@
 {
     using System;
 
-    internal abstract class ResponderBase<T>
+    internal abstract class ResponderBase<T> : LocalDisposable
     {
         protected Func<T, bool> _filter;
         public ResponderBase(Func<T, bool> filter)

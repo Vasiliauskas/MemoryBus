@@ -2,7 +2,7 @@
 {
     using System;
 
-    internal class Subscriber<T> : SubscriberBase<T>, IDisposable
+    internal class Subscriber<T> : SubscriberBase<T>
     {
         private Action<T> _handler;
         internal Subscriber(Action<T> handler, Func<T, bool> filter = null)
@@ -19,7 +19,7 @@
                 _handler(message);
         }
 
-        public void Dispose()
+        protected override void DisposeLocal()
         {
             _handler = null;
             _filter = null;

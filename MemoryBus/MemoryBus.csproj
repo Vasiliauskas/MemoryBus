@@ -43,9 +43,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\ConcurrentKeyedCollection.cs" />
     <Compile Include="Common\DefaultConfig.cs" />
     <Compile Include="Common\DisposableHandle.cs" />
-    <Compile Include="Common\Lookup.cs" />
+    <Compile Include="Common\LocalDisposable.cs" />
     <Compile Include="Interfaces\IBusConfig.cs" />
     <Compile Include="Responders\AsyncResponder.cs" />
     <Compile Include="Responders\Responder.cs" />
