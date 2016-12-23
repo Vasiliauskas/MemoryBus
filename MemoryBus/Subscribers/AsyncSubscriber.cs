@@ -19,11 +19,5 @@
             if (CanConsume(message))
                 await _handler(message);
         }
-
-        protected override void DisposeLocal()
-        {
-            _handler = null;
-            _filter = null;
-        }
     }
 }

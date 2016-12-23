@@ -16,8 +16,5 @@
         }
 
         public Task<U> RespondAsync(T message) => _responder(message);
-
-        protected override void DisposeLocal() => _responder = null;
-
     }
 }

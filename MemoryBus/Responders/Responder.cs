@@ -15,7 +15,5 @@
         }
 
         public U Respond(T message) => _responder(message);
-
-        protected override void DisposeLocal() => _responder = null;
     }
 }

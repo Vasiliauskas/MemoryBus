@@ -49,8 +49,7 @@ namespace MemoryBus.Tests
                 // Assert
                 await Task.WhenAll(tasks).ContinueWith(c =>
                 {
-                    System.Diagnostics.Trace.WriteLine(c.Exception);
-                    Assert.AreEqual(c.IsFaulted, false,c.Exception.ToString());
+                    Assert.AreEqual(c.IsFaulted, false,c.Exception?.ToString());
                     Assert.AreEqual(c.IsCompleted, true);
                     Assert.AreEqual(c.Exception, null);
                     listener.Set();

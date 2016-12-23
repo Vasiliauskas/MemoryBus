@@ -15,6 +15,9 @@
             }
         }
 
-        protected abstract void DisposeLocal();
+        protected virtual void DisposeLocal()
+        {
+
+        }
     }
 }
