@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace MemoryBus.Tests
 {
     [TestClass]
-    // This is a non deterministic approach to prove thread safety
+    // This is a non deterministic approach to assume thread safety
     public class MultithreadingAssumptions
     {
         [TestMethod]

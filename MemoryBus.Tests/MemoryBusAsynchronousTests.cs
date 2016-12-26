@@ -136,6 +136,44 @@ namespace MemoryBus.Tests
             }
         }
 
+        [TestMethod]
+        public async Task BusCanPublishAsyncToBothSyncAndAsyncHandlers()
+        {
+            // Arrange
+            using (var sut = GetSut())
+            {
+                var listener = new ManualResetEventSlim();
+                var listener2 = new ManualResetEventSlim();
+
+                sut.Subscribe<string>(s => listener.Set());
+                sut.SubscribeAsync<string>(s => Task.Run(() => listener2.Set()));
+
+                // Act
+                await sut.PublishAsync(string.Empty);
+
+                // Assert
+                Assert.IsTrue(listener.Wait(TestConfig.TestTimeout), "First one");
+                Assert.IsTrue(listener2.Wait(TestConfig.TestTimeout), "Second one");
+            }
+        }
+
+        [TestMethod]
+        public async Task BusCanRespondAsyncWithSyncResponder()
+        {
+            // Arrange
+            using (var sut = GetSut())
+            {
+                var value = Guid.NewGuid().ToString();
+                sut.Respond<string, string>(_ => value);
+
+                // Act
+                var result = await sut.RequestAsync<string, string>(string.Empty);
+
+                // Assert
+                Assert.AreEqual(value, result);
+            }
+        }
+
         private IBus GetSut() => new MemoryBus(new DefaultConfig());
     }
 }

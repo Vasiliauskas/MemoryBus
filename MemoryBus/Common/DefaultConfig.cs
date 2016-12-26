@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MemoryBus
+﻿namespace MemoryBus
 {
     public class DefaultConfig : IBusConfig
     {
