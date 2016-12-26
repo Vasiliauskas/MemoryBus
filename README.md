@@ -1,6 +1,8 @@
 ﻿MemoryBus [![Build status](https://ci.appveyor.com/api/projects/status/me2ruo9ph65s1nl3?svg=true)](https://ci.appveyor.com/project/Vasiliauskas/memorybus) 
 --------------
 
+[![Join the chat at https://gitter.im/Vasiliauskas/MemoryBus](https://badges.gitter.im/Vasiliauskas/MemoryBus.svg)](https://gitter.im/Vasiliauskas/MemoryBus?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 _This is a library for in-memory messaging with pub/sub and RPC patterns_
 
 To use MemoryBus library, create an instance of MemoryBus. It also comes with IBus interface.
