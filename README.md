@@ -1,4 +1,4 @@
-﻿MemoryBus [![Build status](https://ci.appveyor.com/api/projects/status/me2ruo9ph65s1nl3?svg=true)](https://ci.appveyor.com/project/Vasiliauskas/memorybus) 
+﻿MemoryBus [![Build status](https://ci.appveyor.com/api/projects/status/me2ruo9ph65s1nl3?svg=true)](https://ci.appveyor.com/project/Vasiliauskas/memorybus) [![Gitter](https://badges.gitter.im/Vasiliauskas/MemoryBus.svg)](https://gitter.im/Vasiliauskas/MemoryBus?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 --------------
 
 _This is a library for in-memory messaging with pub/sub and RPC patterns_
