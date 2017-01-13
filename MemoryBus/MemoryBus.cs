@@ -117,6 +117,21 @@
             return Subscribe(key, responder, _responders);
         }
 
+        public IObservable<UResponse> StreamRequest<TRequest, UResponse>(TRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IDisposable StreamRespond<TRequest, UResponse>(Action<TRequest, IObserver<UResponse>> handler, Func<TRequest, bool> filter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IDisposable StreamRespond<TRequest, UResponse>(Action<TRequest, IObserver<UResponse>> handler)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Dispose()
         {
             if (_isDisposed)
