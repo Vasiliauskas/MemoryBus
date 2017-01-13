@@ -1,6 +1,7 @@
-﻿using System;
-namespace MemoryBus
+﻿namespace MemoryBus
 {
+    using System;
+
     internal class DisposableHandle : IDisposable
     {
         private Action _dispose;

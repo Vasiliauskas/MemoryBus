@@ -175,32 +175,6 @@ namespace MemoryBus.Tests
             }
         }
 
-        [TestCategory("Unit")]
-        [TestMethod]
-        public void BusCanRespondToStreamRequest()
-        {
-            // Arrange
-            using (var sut = GetSut())
-            {
-                var listener = new ManualResetEventSlim();
-                IObservable<string> _stream = new Subject<string>();
-                string testData = Guid.NewGuid().ToString();
-                sut.StreamRespond<string, string>((s, o) =>
-                {
-                    o.OnNext(testData);
-                    o.OnCompleted();
-                });
-                // Act
-                var response = sut.StreamRequest<string, string>(string.Empty);
-                response.Subscribe(s =>
-                {
-                    Assert.AreEqual(s, testData);
-                },
-                ()=>listener.Set());
-                // Assert
-                Assert.IsTrue(listener.Wait(TestConfig.TestTimeout), "First one");
-            }
-        }
 
         private IBus GetSut() => new MemoryBus(new DefaultConfig());
     }

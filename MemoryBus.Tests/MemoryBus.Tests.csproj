@@ -81,6 +81,7 @@
     <Compile Include="MultithreadingAssumptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MemoryBusAsynchronousTests.cs" />
+    <Compile Include="StreamingBusTests.cs" />
     <Compile Include="TestConfig.cs" />
   </ItemGroup>
   <ItemGroup>
