@@ -13,6 +13,9 @@ platform:
 configuration:
   - Build
 
+before_build:
+  - nuget restore
+
 build:
   project: MemoryBus.sln
 
