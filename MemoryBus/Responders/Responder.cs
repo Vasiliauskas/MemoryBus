@@ -2,7 +2,7 @@
 {
     using System;
 
-    internal class Responder<T, U> : ResponderBase<T>
+    class Responder<T, U> : ResponderBase<T>
     {
         private Func<T, U> _responder;
         internal Responder(Func<T, U> responder, Func<T, bool> filter)

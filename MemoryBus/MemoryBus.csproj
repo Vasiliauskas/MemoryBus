@@ -69,6 +69,7 @@
     <Compile Include="Bus\PublishSubscribeBus.cs" />
     <Compile Include="Bus\RequestRespondBus.cs" />
     <Compile Include="Bus\RequestRespondStreamingBus.cs" />
+    <Compile Include="Bus\RequestRespondBusBase.cs" />
     <Compile Include="Common\ConcurrentKeyedCollection.cs" />
     <Compile Include="Common\DefaultConfig.cs" />
     <Compile Include="Common\DisposableHandle.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="Responders\AsyncResponder.cs" />
     <Compile Include="Responders\Responder.cs" />
     <Compile Include="Responders\ResponderBase.cs" />
+    <Compile Include="Responders\StreamingResponder.cs" />
     <Compile Include="Subscribers\AsyncSubscriber.cs" />
     <Compile Include="Interfaces\IBus.cs" />
     <Compile Include="MemoryBus.cs" />

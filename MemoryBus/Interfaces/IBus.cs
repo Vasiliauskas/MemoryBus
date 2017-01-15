@@ -22,10 +22,10 @@
         IDisposable RespondAsync<TRequest, UResponse>(Func<TRequest, Task<UResponse>> handler, Func<TRequest, bool> filter);
 
         IObservable<UResponse> StreamRequest<TRequest, UResponse>(TRequest request);
-        void StreamRequest<TRequest, UResponse>(TRequest request, Action<TRequest> onNext, Action<Exception> onError, Action onCompleted);
-        void StreamRequest<TRequest, UResponse>(TRequest request, Action<TRequest> onNext, Action<Exception> onError);
-        void StreamRequest<TRequest, UResponse>(TRequest request, Action<TRequest> onNext, Action onCompleted);
-        void StreamRequest<TRequest, UResponse>(TRequest request, Action<TRequest> onNext);
+        IDisposable StreamRequest<TRequest, UResponse>(TRequest request, Action<UResponse> onNext, Action<Exception> onError, Action onCompleted);
+        IDisposable StreamRequest<TRequest, UResponse>(TRequest request, Action<UResponse> onNext, Action<Exception> onError);
+        IDisposable StreamRequest<TRequest, UResponse>(TRequest request, Action<UResponse> onNext, Action onCompleted);
+        IDisposable StreamRequest<TRequest, UResponse>(TRequest request, Action<UResponse> onNext);
 
         IDisposable StreamRespond<TRequest, UResponse>(Action<TRequest, IObserver<UResponse>> handler, Func<TRequest, bool> filter);
         IDisposable StreamRespond<TRequest, UResponse>(Action<TRequest, IObserver<UResponse>> handler);

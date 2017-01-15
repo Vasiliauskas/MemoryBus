@@ -3,7 +3,7 @@
     using System;
     using System.Threading.Tasks;
 
-    internal class AsyncResponder<T, U> : ResponderBase<T>
+    class AsyncResponder<T, U> : ResponderBase<T>
     {
         private Func<T, Task<U>> _responder;
         internal AsyncResponder(Func<T, Task<U>> responder, Func<T, bool> filter)

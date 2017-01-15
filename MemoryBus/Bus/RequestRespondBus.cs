@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MemoryBus.Bus
 {
-    class RequestRespondBus : BusBase
+    class RequestRespondBus : RequestRespondBusBase
     {
         public UResponse Request<TRequest, UResponse>(TRequest request)
         {
@@ -65,17 +65,6 @@ namespace MemoryBus.Bus
             else
             {
                 throw new InvalidOperationException($"No responders found for <{typeof(TRequest).FullName},{typeof(TRequest).FullName}>");
-            }
-        }
-
-        private int GetCombinedHashCode(Type request, Type response)
-        {
-            unchecked
-            {
-                int hash = 17;
-                hash = hash * 31 + request.GetHashCode();
-                hash = hash * 31 + response.GetHashCode();
-                return hash;
             }
         }
     }
