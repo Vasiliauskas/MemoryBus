@@ -22,8 +22,8 @@ bus.StreamRespond<string, string>((s, o) =>
 { 
 	o.OnNext(s + " World");
 	o.OnCompleted();
-);
-var result = bus.StreamRequest<string, string>("Hello", s=> Console.WriteLine(result)); // Hello World
+});
+var result = bus.StreamRequest<string, string>("Hello", s => Console.WriteLine(s)); // Hello World
 ```
 
 * Bus supports multicasting for Publish<T> and PublishAsync<T>
