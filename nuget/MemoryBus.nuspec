@@ -9,12 +9,12 @@
     <language>en-US</language>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <tags>Memory Bus MemoryBus Events Messages EventAggregator Messaging</tags>
+    <dependencies>
+      <dependency id="System.Reactive.Linq" version="3.1.1" />
+      <dependency id="System.Reactive.Core" version="3.1.1" />
+      <dependency id="System.Reactive.Interfaces" version="3.1.1" />
+    </dependencies>
   </metadata>
-  <dependencies>
-    <dependency id="System.Reactive.Linq" version="3.1.1" />
-    <dependency id="System.Reactive.Core" version="3.1.1" />
-    <dependency id="System.Reactive.Interfaces" version="3.1.1" />
-  </dependencies>
   <files>
     <file src="..\MemoryBus\bin\Build\MemoryBus.dll" target="lib\net461" />
   </files>
