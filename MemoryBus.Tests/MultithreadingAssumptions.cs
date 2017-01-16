@@ -49,7 +49,54 @@ namespace MemoryBus.Tests
                 // Assert
                 await Task.WhenAll(tasks).ContinueWith(c =>
                 {
-                    Assert.AreEqual(c.IsFaulted, false,c.Exception?.ToString());
+                    Assert.AreEqual(c.IsFaulted, false, c.Exception?.ToString());
+                    Assert.AreEqual(c.IsCompleted, true);
+                    Assert.AreEqual(c.Exception, null);
+                    listener.Set();
+                });
+
+                Assert.AreEqual(listener.Wait(TestConfig.TestTimeout), true);
+            }
+        }
+
+        [TestMethod]
+        public async Task BusPubSubAsyncCanHandleMultiThreadedEnvironment()
+        {
+            // Arrange
+            using (var sut = GetSut())
+            {
+                var tasks = new List<Task>();
+                var listener = new ManualResetEventSlim();
+
+                for (int i = 0; i < 5; i++)
+                {
+                    tasks.Add(new Task(() => sut.SubscribeAsync<object>(s => Task.FromResult(0))));
+                    tasks.Add(new Task(() => sut.Subscribe<object>(s => { }, s => s != null)));
+                }
+
+                for (int i = 0; i < 5; i++)
+                {
+                    tasks.Add(new Task(async () => await sut.PublishAsync<object>(new object())));
+                    tasks.Add(new Task(() => sut.Publish<object>(null)));
+                }
+
+                for (int i = 0; i < 10; i++)
+                {
+                    tasks.Add(new Task(() =>
+                    {
+                        var handle = sut.SubscribeAsync<object>(s => Task.FromResult(0));
+                        Thread.Sleep(i * 10);
+                        sut.Publish<object>(new object());
+                        handle.Dispose();
+                    }));
+                }
+                // Act
+                tasks.ForEach(t => t.Start());
+
+                // Assert
+                await Task.WhenAll(tasks).ContinueWith(c =>
+                {
+                    Assert.AreEqual(c.IsFaulted, false, c.Exception?.ToString());
                     Assert.AreEqual(c.IsCompleted, true);
                     Assert.AreEqual(c.Exception, null);
                     listener.Set();
@@ -60,6 +107,6 @@ namespace MemoryBus.Tests
         }
 
 
-        private IBus GetSut() =>  new MemoryBus(new DefaultConfig());
+        private IBus GetSut() => new MemoryBus(new DefaultConfig());
     }
 }
