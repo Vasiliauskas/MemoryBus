@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MemoryBus.Bus
+﻿namespace MemoryBus.Bus
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+
     class PublishSubscribeBus : BusBase
     {
         public void Publish<TRequest>(TRequest message)

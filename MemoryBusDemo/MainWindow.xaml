@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MemoryBusDemo"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="700" Width="900">
     <Grid Margin="20">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
@@ -22,11 +22,19 @@
 
             <StackPanel Grid.Row="2">
                 <TextBox x:Name="Result"/>
-                <Button Content="Request" Click="Request"/>
-                <Button Content="Request Int" Click="RequestInt"/>
-                <Button Content="Request async" Click="RequestAsync"/>
-                <Button Content="Request async wait" Click="RequestAsyncWait"/>
+                <Button Content="Request asyncresponder" Click="Request"/>
+                <Button Content="Request Int responder" Click="RequestInt"/>
+                <Button Content="Request async asyncresponder" Click="RequestAsync"/>
+                <Button Content="Request async wait asyncresponder" Click="RequestAsyncWait"/>
                 <Button Content="StreamRequest" Click="StreamRequest"/>
+                <Button Content="Clear" Click="Clear"/>
+            </StackPanel>
+
+            <StackPanel Grid.Row="2">
+                <TextBox x:Name="Result2"/>
+                <Button Content="Request responder" Click="RequestResponder"/>
+                <Button Content="Request async responder" Click="RequestAsyncResponder"/>
+                <Button Content="Request async wait responder" Click="RequestAsyncWaitResponder"/>
                 <Button Content="Clear" Click="Clear"/>
             </StackPanel>
         </StackPanel>

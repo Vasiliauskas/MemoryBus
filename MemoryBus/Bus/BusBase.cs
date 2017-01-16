@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace MemoryBus.Bus
+﻿namespace MemoryBus.Bus
 {
+    using System;
+
     abstract class BusBase : IDisposable
     {
         protected ConcurrentKeyedCollection _handlers;

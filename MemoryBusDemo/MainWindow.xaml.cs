@@ -28,6 +28,7 @@ namespace MemoryBusDemo
             });
 
             _bus.RespondAsync<string, string>(s => Task.FromResult("response: " + s));
+            _bus.Respond<int, string>(s => "response: " + s.ToString());
             int a;
             _bus.Respond<string, int>(s => int.Parse(s), s => int.TryParse(s, out a));
             _bus.StreamRespond<string, string>((s, o) =>
@@ -87,6 +88,21 @@ namespace MemoryBusDemo
             var msg = this.Result.Text;
             _bus.StreamRequest<string, string>(msg, ProcessMessage, () => ProcessMessage($"Stream {msg} done"));
             ProcessMessage($"Stream {_bus.RequestAsync<string, string>(this.Result.Text).Result}");
+        }
+
+        private void RequestResponder(object sender, RoutedEventArgs e)
+        {
+            ProcessMessage($"Request responder: {_bus.Request<int, string>(int.Parse(this.Result2.Text))}");
+        }
+
+        private async void RequestAsyncResponder(object sender, RoutedEventArgs e)
+        {
+            ProcessMessage($"Request responder async: {await _bus.RequestAsync<int, string>(int.Parse(this.Result2.Text))}");
+        }
+
+        private void RequestAsyncWaitResponder(object sender, RoutedEventArgs e)
+        {
+            ProcessMessage($"Request responder async wait: {_bus.RequestAsync<int, string>(int.Parse(this.Result2.Text)).Result}");
         }
     }
 }

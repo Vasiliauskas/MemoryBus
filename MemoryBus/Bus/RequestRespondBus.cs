@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MemoryBus.Bus
+﻿namespace MemoryBus.Bus
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+
     class RequestRespondBus : RequestRespondBusBase
     {
         public UResponse Request<TRequest, UResponse>(TRequest request)
@@ -25,7 +25,7 @@ namespace MemoryBus.Bus
             if (responder is AsyncResponder<TRequest, UResponse>)
                 return await (responder as AsyncResponder<TRequest, UResponse>).RespondAsync(request);
             else
-                return await Task<UResponse>.Run(() => (responder as Responder<TRequest, UResponse>).Respond(request));
+                return await Task.FromResult((responder as Responder<TRequest, UResponse>).Respond(request));
         }
 
         public IDisposable Respond<TRequest, UResponse>(Func<TRequest, UResponse> handler) => Respond(handler, null);
