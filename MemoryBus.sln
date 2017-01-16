@@ -20,6 +20,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuget", "nuget", "{FD408F00
 		nuget\pack.ps1 = nuget\pack.ps1
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemoryBusDemo", "MemoryBusDemo\MemoryBusDemo.csproj", "{55CE1B36-759A-4080-8B52-B241AA7CEFF2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Build|Any CPU = Build|Any CPU
@@ -39,6 +41,12 @@ Global
 		{4E0415A6-685E-45ED-9328-7F47826C452C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E0415A6-685E-45ED-9328-7F47826C452C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E0415A6-685E-45ED-9328-7F47826C452C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55CE1B36-759A-4080-8B52-B241AA7CEFF2}.Build|Any CPU.ActiveCfg = Release|Any CPU
+		{55CE1B36-759A-4080-8B52-B241AA7CEFF2}.Build|Any CPU.Build.0 = Release|Any CPU
+		{55CE1B36-759A-4080-8B52-B241AA7CEFF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55CE1B36-759A-4080-8B52-B241AA7CEFF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55CE1B36-759A-4080-8B52-B241AA7CEFF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55CE1B36-759A-4080-8B52-B241AA7CEFF2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
