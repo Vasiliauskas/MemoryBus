@@ -1,5 +1,6 @@
 ﻿namespace MemoryBus.Bus
 {
+    using Common;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -8,9 +9,9 @@
 
     class PublishSubscribeBus : BusBase
     {
-        public void Publish<TRequest>(TRequest message)
+        public void Publish<TMessage>(TMessage message)
         {
-            var subs = GetSubscribers<TRequest>();
+            var subs = GetSubscribers<TMessage>();
             if (subs != null)
             {
                 foreach (var syncSub in subs.Item1)
@@ -21,9 +22,9 @@
             }
         }
 
-        public async Task PublishAsync<TRequest>(TRequest request)
+        public async Task PublishAsync<TMessage>(TMessage request)
         {
-            var subs = GetSubscribers<TRequest>();
+            var subs = GetSubscribers<TMessage>();
             if (subs != null)
             {
                 await Task
@@ -44,41 +45,42 @@
             }
         }
 
-        public IDisposable Subscribe<TRequest>(Action<TRequest> handler) => Subscribe<TRequest>(handler, null);
+        public IDisposable Subscribe<TMessage>(Action<TMessage> handler) => Subscribe<TMessage>(handler, null);
 
-        public IDisposable Subscribe<TRequest>(Action<TRequest> handler, Func<TRequest, bool> filter)
+        public IDisposable Subscribe<TMessage>(Action<TMessage> handler, Func<TMessage, bool> filter)
         {
-            var key = typeof(TRequest).GetHashCode();
-            var subscriber = new Subscriber<TRequest>(handler, filter);
+            var topic = Topic.CreateTopic<TMessage>();
+            var subscriber = new Subscriber<TMessage>(handler, filter);
 
-            return Subscribe(key, subscriber);
+            return Subscribe(topic, subscriber);
         }
 
-        public IDisposable SubscribeAsync<TRequest>(Func<TRequest, Task> handler) => SubscribeAsync(handler, null);
+        public IDisposable SubscribeAsync<TMessage>(Func<TMessage, Task> handler) => SubscribeAsync(handler, null);
 
-        public IDisposable SubscribeAsync<TRequest>(Func<TRequest, Task> handler, Func<TRequest, bool> filter)
+        public IDisposable SubscribeAsync<TMessage>(Func<TMessage, Task> handler, Func<TMessage, bool> filter)
         {
-            var key = typeof(TRequest).GetHashCode();
-            var subscriber = new AsyncSubscriber<TRequest>(handler, filter);
+            var topic = Topic.CreateTopic<TMessage>();
+            var subscriber = new AsyncSubscriber<TMessage>(handler, filter);
 
-            return Subscribe(key, subscriber);
+            return Subscribe(topic, subscriber);
         }
 
-        private Tuple<IEnumerable<Subscriber<T>>, IEnumerable<AsyncSubscriber<T>>> GetSubscribers<T>()
+        private Tuple<IEnumerable<Subscriber<TMessage>>, IEnumerable<AsyncSubscriber<TMessage>>> GetSubscribers<TMessage>()
         {
             List<IDisposable> subscribers;
-            var key = typeof(T).GetHashCode();
-            if (_handlers.TryGet(key, out subscribers))
-            {
-                var asyncSubscribers = subscribers.Where(s => s is AsyncSubscriber<T>).Cast<AsyncSubscriber<T>>();
-                var syncSubscribers = subscribers.Where(s => s is Subscriber<T>).Cast<Subscriber<T>>();
+            var topic = Topic.CreateTopic<TMessage>();
 
-                return new Tuple<IEnumerable<Subscriber<T>>, IEnumerable<AsyncSubscriber<T>>>(syncSubscribers, asyncSubscribers);
+            if (_handlers.TryGet(topic, out subscribers))
+            {
+                var asyncSubscribers = subscribers.Where(s => s is AsyncSubscriber<TMessage>).Cast<AsyncSubscriber<TMessage>>();
+                var syncSubscribers = subscribers.Where(s => s is Subscriber<TMessage>).Cast<Subscriber<TMessage>>();
+
+                return new Tuple<IEnumerable<Subscriber<TMessage>>, IEnumerable<AsyncSubscriber<TMessage>>>(syncSubscribers, asyncSubscribers);
             }
 
             return null;
         }
 
-       
+
     }
 }

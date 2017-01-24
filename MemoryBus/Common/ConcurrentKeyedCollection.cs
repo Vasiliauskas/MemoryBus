@@ -1,5 +1,6 @@
 ﻿namespace MemoryBus
 {
+    using Common;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -7,26 +8,26 @@
 
     internal class ConcurrentKeyedCollection
     {
-        private Dictionary<int, HashSet<IDisposable>> _innerCollection;
+        private Dictionary<Topic, HashSet<IDisposable>> _innerCollection;
         private ReaderWriterLock _lock;
         private int _writerReaderTimeout;
 
         internal ConcurrentKeyedCollection(int writerReaderTimeout)
         {
-            _innerCollection = new Dictionary<int, HashSet<IDisposable>>();
+            _innerCollection = new Dictionary<Topic, HashSet<IDisposable>>();
             _lock = new ReaderWriterLock();
             _writerReaderTimeout = writerReaderTimeout;
         }
 
-        internal bool TryAdd(int key, IDisposable value)
+        internal bool TryAdd(Topic topic, IDisposable value)
         {
             _lock.AcquireWriterLock(_writerReaderTimeout);
          
             HashSet<IDisposable> hashSet;
-            if (!_innerCollection.TryGetValue(key, out hashSet))
+            if (!_innerCollection.TryGetValue(topic, out hashSet))
             {
                 hashSet = new HashSet<IDisposable>();
-                _innerCollection.Add(key, hashSet);
+                _innerCollection.Add(topic, hashSet);
             }
             var result =  hashSet.Add(value);
 
@@ -35,14 +36,14 @@
             return result;
         }
 
-        internal bool TryGet(int key, out List<IDisposable> outValue)
+        internal bool TryGet(Topic topic, out List<IDisposable> outValue)
         {
             _lock.AcquireReaderLock(_writerReaderTimeout);
             var result = false;
             outValue = null;
-            if (_innerCollection.ContainsKey(key))
+            if (_innerCollection.ContainsKey(topic))
             {
-                outValue = _innerCollection[key].ToList();
+                outValue = _innerCollection[topic].ToList();
                 result = true;
             }
 
@@ -51,14 +52,14 @@
             return result;
         }
 
-        internal bool TryRemove(int key, IDisposable member)
+        internal bool TryRemove(Topic topic, IDisposable member)
         {
             _lock.AcquireWriterLock(_writerReaderTimeout);
 
             bool result = false;
             HashSet<IDisposable> hashSet;
 
-            if (_innerCollection.TryGetValue(key, out hashSet))
+            if (_innerCollection.TryGetValue(topic, out hashSet))
                 result = hashSet.Remove(member);
 
             _lock.ReleaseWriterLock();

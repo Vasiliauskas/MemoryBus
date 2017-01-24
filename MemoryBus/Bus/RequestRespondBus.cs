@@ -32,28 +32,28 @@
 
         public IDisposable Respond<TRequest, UResponse>(Func<TRequest, UResponse> handler, Func<TRequest, bool> filter)
         {
-            var key = GetCombinedHashCode(typeof(TRequest), typeof(UResponse));
+            var topic = GetCombinedTopic<TRequest, UResponse>();
             var responder = new Responder<TRequest, UResponse>(handler, filter);
 
-            return Subscribe(key, responder);
+            return Subscribe(topic, responder);
         }
 
         public IDisposable RespondAsync<TRequest, UResponse>(Func<TRequest, Task<UResponse>> handler) => RespondAsync(handler, null);
 
         public IDisposable RespondAsync<TRequest, UResponse>(Func<TRequest, Task<UResponse>> handler, Func<TRequest, bool> filter)
         {
-            var key = GetCombinedHashCode(typeof(TRequest), typeof(UResponse));
+            var topic = GetCombinedTopic<TRequest, UResponse>();
             var responder = new AsyncResponder<TRequest, UResponse>(handler, filter);
 
-            return Subscribe(key, responder);
+            return Subscribe(topic, responder);
         }
 
         private ResponderBase<TRequest> GetResponder<TRequest, UResponse>(TRequest request, ConcurrentKeyedCollection collection)
         {
             List<IDisposable> responders;
-            var key = GetCombinedHashCode(typeof(TRequest), typeof(UResponse));
+            var topic = GetCombinedTopic<TRequest, UResponse>();
 
-            if (collection.TryGet(key, out responders))
+            if (collection.TryGet(topic, out responders))
             {
                 var filteredResponders = responders.Cast<ResponderBase<TRequest>>().Where(r => r.CanRespond(request));
 
@@ -64,7 +64,7 @@
             }
             else
             {
-                throw new InvalidOperationException($"No responders found for <{typeof(TRequest).FullName},{typeof(TRequest).FullName}>");
+                throw new InvalidOperationException($"No responders found for <{typeof(TRequest).FullName},{typeof(UResponse).FullName}>");
             }
         }
     }

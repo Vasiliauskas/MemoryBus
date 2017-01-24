@@ -66,6 +66,7 @@
     <Compile Include="Common\DefaultConfig.cs" />
     <Compile Include="Common\DisposableHandle.cs" />
     <Compile Include="Common\LocalDisposable.cs" />
+    <Compile Include="Common\Topic.cs" />
     <Compile Include="Interfaces\IBusConfig.cs" />
     <Compile Include="Responders\AsyncResponder.cs" />
     <Compile Include="Responders\Responder.cs" />

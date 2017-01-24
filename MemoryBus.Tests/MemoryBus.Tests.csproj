@@ -83,6 +83,8 @@
     <Compile Include="MemoryBusAsynchronousTests.cs" />
     <Compile Include="StreamingBusTests.cs" />
     <Compile Include="TestConfig.cs" />
+    <Compile Include="TestContracts.cs" />
+    <Compile Include="TopicTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MemoryBus\MemoryBus.csproj">

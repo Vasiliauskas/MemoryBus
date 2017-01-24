@@ -54,10 +54,10 @@
 
         public IDisposable Respond<TRequest, UResponse>(Action<TRequest, IObserver<UResponse>> handler, Func<TRequest, bool> filter)
         {
-            var key = GetCombinedHashCode(typeof(TRequest), typeof(UResponse));
+            var topic = GetCombinedTopic<TRequest, UResponse>();
             var responder = new StreamingResponder<TRequest, UResponse>(handler, filter);
 
-            return Subscribe(key, responder);
+            return Subscribe(topic, responder);
         }
 
         private Tuple<ISubject<UResponse>, StreamingResponder<TRequest, UResponse>> TrySetupResponse<TRequest, UResponse>(TRequest request)

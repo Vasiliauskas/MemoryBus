@@ -201,6 +201,55 @@ namespace MemoryBus.Tests
             }
         }
 
+
+        [TestMethod]
+        public void BusCanSubscribeAndRespondWithReferenceTypeContract()
+        {
+            using (var sut = GetSut())
+            {
+                var value = new ContractA() { Name = Guid.NewGuid().ToString() };
+                var listener = new ManualResetEventSlim();
+                sut.Subscribe<ContractA>(s =>
+                {
+                    Assert.AreEqual(s.Name, value.Name);
+                    listener.Set();
+                });
+                var test = new ContractB();
+
+                // Act
+                sut.Publish(value);
+
+                // Assert
+                Assert.IsTrue(listener.Wait(TestConfig.TestTimeout));
+            }
+        }
+
+        [TestMethod]
+        public void BusCanRequestAndRespondWithReferenceTypeContract()
+        {
+            // Assert
+            using (var sut = GetSut())
+            {
+                var value = new ContractA() { Name = Guid.NewGuid().ToString() };
+                var id = Guid.NewGuid();
+                var listener = new ManualResetEventSlim();
+                sut.Respond<ContractA, ContractB>(s =>
+                {
+                    Assert.AreEqual(s.Name, value.Name);
+                    listener.Set();
+                    return new ContractB() { Id = id };
+                });
+                var test = new ContractB();
+
+                // Act
+                var result = sut.Request<ContractA, ContractB>(value);
+
+                // Assert
+                Assert.IsTrue(listener.Wait(TestConfig.TestTimeout));
+                Assert.AreEqual(result.Id, id);
+            }
+        }
+
         private IBus GetSut() => new MemoryBus(new DefaultConfig());
     }
 }
