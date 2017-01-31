@@ -2,6 +2,7 @@
 using System;
 using System.Reactive.Subjects;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MemoryBus.Tests
 {
@@ -184,6 +185,46 @@ namespace MemoryBus.Tests
 
                 // Assert
                 Assert.IsTrue(listener.Wait(TestConfig.TestTimeout), "Failed");
+            }
+        }
+
+        [TestMethod]
+        public async Task BusStreamResponseHasNoEffectIfLateOrMultipleSubscribe()
+        {
+            // Arrange
+            using (var sut = GetSut())
+            {
+                var listener = new ManualResetEventSlim();
+                var listener2 = new ManualResetEventSlim();
+                string testData = Guid.NewGuid().ToString();
+
+                sut.StreamRespond<string, string>((s, o) =>
+                {
+                    Task.Run(() =>
+                    {
+                        o.OnNext(testData);
+                        o.OnCompleted();
+                    });
+                });
+
+                // Act
+                var obs = sut.StreamRequest<string, string>(string.Empty);
+                await Task.Delay(100);
+                obs.Subscribe(s =>
+                {
+                    Assert.AreEqual(s, testData);
+                }, () => listener.Set());
+
+                // Assert
+                Assert.IsTrue(listener.Wait(TestConfig.TestTimeout), "Failed");
+
+                obs.Subscribe(s =>
+                {
+                    Assert.AreEqual(s, testData);
+                }, () => listener2.Set());
+
+                // Assert
+                Assert.IsTrue(listener2.Wait(TestConfig.TestTimeout), "Failed");
             }
         }
 
