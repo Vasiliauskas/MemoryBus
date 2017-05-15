@@ -27,6 +27,6 @@ var result = bus.StreamRequest<string, string>("Hello", s => Console.WriteLine(s
 ```
 
 * Bus supports multicasting for Publish<T> and PublishAsync<T>
-* Exception will be thrown if Reqest<T, U> or RequestAsync<T, U> after filters applied still has more or less than one responder
-* Exception will be thrown if StreamReqest<T, U> after filters applied still has more or less than one responder
+* Exception will be thrown if Reqeust<T, U> or RequestAsync<T, U> after filters applied still has more or less than one responder
+* Exception will be thrown if StreamReqeust<T, U> after filters applied still has more or less than one responder
 * Each subscription or responder registration returns IDisposable handle, if called Dispose(), it will remove original subscriber or responder from internal bus registry
